@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dev_eval_postgres
+    environment:
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: developer
+      POSTGRES_DB: developer_evaluation
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U developer -d developer_evaluation"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - dev_eval_pgdata:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:7
+    container_name: dev_eval_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: developer
+      MONGO_INITDB_ROOT_PASSWORD: developer
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "mongodb://developer:developer@localhost:27017/admin?authSource=admin",
+          "--eval",
+          "db.runCommand({ ping: 1 }).ok"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - dev_eval_mongodata:/data/db
+
+  api:
+    image: dev-eval-api:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dev_eval_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=developer_evaluation;Username=developer;Password=developer;Pooling=true;
+
+      MongoSettings__ConnectionString: mongodb://developer:developer@mongo:27017/admin?authSource=admin
+      MongoSettings__Database: developer_evaluation
+      MongoSettings__AuditCollection: sale_events
+
+      # JWT (ESSENCIAL para não crashar)
+      Jwt__SecretKey: DEV_ONLY__CHANGE_ME__A_SUPER_LONG_SECRET_KEY_64_CHARS_MINIMUM
+      Jwt__Issuer: Ambev.DeveloperEvaluation
+      Jwt__Audience: Ambev.DeveloperEvaluation
+
+    ports:
+      - "8080:8080"
+
+volumes:
+  dev_eval_pgdata:
+  dev_eval_mongodata:
