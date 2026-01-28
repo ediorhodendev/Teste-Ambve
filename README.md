@@ -370,6 +370,9 @@ Retorna lista paginada de clientes.
 }
 ```
 
+### Exemplos de testes no documento de mapa de teste.
+* Mapa-de-testes.md
+
 ### Regras de Negócio
 
 * `saleNumber` é único
