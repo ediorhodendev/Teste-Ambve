@@ -161,7 +161,6 @@ http://localhost:8080/swagger/index.html
 
 O Swagger exibirá todos os endpoints disponíveis, incluindo:
 
-* Auth
 * Sales
 * Users
 
@@ -200,6 +199,301 @@ docker compose down
 ✔ Código organizado, legível e extensível
 
 ---
+
+Perfeito 👍
+Abaixo está um **documento completo, profissional e pronto para entrega ao avaliador**, cobrindo **todos os principais endpoints do projeto**, explicando **objetivo, payloads, respostas, regras e arquitetura**.
+Esse texto você pode **colar direto no `README.md`** do repositório.
+
+---
+
+# 📘 Ambev Developer Evaluation – API Documentation
+
+## 📌 Visão Geral
+
+Esta API foi desenvolvida como parte do **Developer Evaluation Project**, seguindo princípios de:
+
+* ✅ **Clean Architecture**
+* ✅ **DDD (Domain-Driven Design)**
+* ✅ **CQRS**
+* ✅ **Separação de responsabilidades**
+* ✅ **Auditoria desacoplada via MongoDB**
+
+A solução utiliza:
+
+* **PostgreSQL** para dados transacionais
+* **MongoDB** para auditoria/eventos
+* **ASP.NET Core 8**
+* **Entity Framework Core**
+* **FluentValidation**
+* **AutoMapper**
+
+---
+
+## 🌐 Base URL
+
+```
+http://localhost:8080
+```
+
+---
+
+## 🔐 Autenticação
+
+> Para simplificação do desafio, os endpoints estão públicos.
+> A infraestrutura de JWT já está configurada para fácil extensão.
+
+---
+
+# 📦 Customers (Clientes)
+
+## ➕ Criar Cliente
+
+**POST** `/api/customers`
+
+```json
+{
+  "name": "João da Silva",
+  "document": "12345678901",
+  "email": "joao.silva@email.com",
+  "phone": "11999990001"
+}
+```
+
+### Regras
+
+* Documento e e-mail devem ser únicos
+* E-mail validado
+* Cliente inicia como ativo
+
+---
+
+## 📄 Listar Clientes
+
+**GET** `/api/customers`
+
+Retorna lista paginada de clientes.
+
+---
+
+## 🔍 Obter Cliente por ID
+
+**GET** `/api/customers/{id}`
+
+---
+
+## ✏️ Atualizar Cliente
+
+**PUT** `/api/customers/{id}`
+
+```json
+{
+  "name": "João da Silva Atualizado",
+  "email": "joao.novo@email.com",
+  "phone": "11999990002",
+  "isActive": true
+}
+```
+
+---
+
+## ❌ Desativar Cliente
+
+**DELETE** `/api/customers/{id}`
+
+> O cliente não é removido fisicamente (soft delete).
+
+---
+
+# 🏬 Branches (Filiais)
+
+## ➕ Criar Filial
+
+**POST** `/api/branches`
+
+```json
+{
+  "name": "Filial São Paulo",
+  "location": "São Paulo - SP"
+}
+```
+
+---
+
+## 📄 Listar Filiais
+
+**GET** `/api/branches`
+
+---
+
+## 🔍 Obter Filial por ID
+
+**GET** `/api/branches/{id}`
+
+---
+
+## ✏️ Atualizar Filial
+
+**PUT** `/api/branches/{id}`
+
+---
+
+## ❌ Desativar Filial
+
+**DELETE** `/api/branches/{id}`
+
+---
+
+# 🍺 Products (Produtos)
+
+## ➕ Criar Produto
+
+**POST** `/api/products`
+
+```json
+{
+  "externalId": "SKU-001",
+  "name": "Cerveja Pilsen 350ml",
+  "description": "Cerveja Pilsen lata 350ml",
+  "price": 3.50
+}
+```
+
+### Regras
+
+* `externalId` único
+* Preço maior que zero
+
+---
+
+## 📄 Listar Produtos
+
+**GET** `/api/products`
+
+---
+
+## 🔍 Obter Produto por ID
+
+**GET** `/api/products/{id}`
+
+---
+
+## ✏️ Atualizar Produto
+
+**PUT** `/api/products/{id}`
+
+---
+
+## ❌ Desativar Produto
+
+**DELETE** `/api/products/{id}`
+
+---
+
+# 🧾 Sales (Vendas)
+
+## ➕ Criar Venda
+
+**POST** `/api/sales`
+
+```json
+{
+  "saleNumber": "SALE-2026-0001",
+  "saleDate": "2026-01-28T01:30:00Z",
+  "customerId": "feda6cac-ff92-4e3a-809b-9650f978b267",
+  "branchId": "a3f5ff94-9b34-4456-8b30-3a319dee5bc0",
+  "items": [
+    {
+      "productId": "b202a1d9-937f-4c59-8ef7-384b93dc8a95",
+      "quantity": 4
+    }
+  ]
+}
+```
+
+### Regras de Negócio
+
+* `saleNumber` é único
+* Cliente, filial e produtos devem existir e estar ativos
+* Quantidade > 0
+* Totais são calculados automaticamente
+* Snapshot de nomes e preços é salvo
+
+---
+
+## 📄 Listar Vendas
+
+**GET** `/api/sales`
+
+### Filtros disponíveis
+
+* `saleNumber`
+* `customerName`
+* `branchName`
+* `initialDate`
+* `finalDate`
+* Paginação
+
+---
+
+## 🔍 Obter Venda por ID
+
+**GET** `/api/sales/{id}`
+
+---
+
+# 📜 Auditoria (MongoDB)
+
+## 📌 Conceito
+
+Toda ação relevante gera um **evento de auditoria** persistido no MongoDB, sem impactar a transação principal.
+
+### Collection
+
+```
+sale_events
+```
+
+### Exemplo de documento
+
+```json
+{
+  "saleId": "5407d2a8-1a77-43ce-9b05-f44d22f6fa8f",
+  "eventType": "SaleCreated",
+  "occurredAt": "2026-01-28T01:30:01Z",
+  "payload": {
+    "saleNumber": "SALE-2026-0001",
+    "totalAmount": 14.00,
+    "items": [
+      {
+        "productName": "Cerveja Pilsen 350ml",
+        "quantity": 4,
+        "unitPrice": 3.50,
+        "totalAmount": 14.00
+      }
+    ]
+  }
+}
+```
+
+---
+
+
+
+
+# ✅ Conclusão
+
+Este projeto demonstra:
+
+* Organização de código profissional
+* Boas práticas modernas de backend
+* Clareza arquitetural
+* Facilidade de extensão e manutenção
+
+---
+
+
+
+
 
 ## 📌 Considerações Finais
 
