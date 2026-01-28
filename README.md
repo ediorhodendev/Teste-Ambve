@@ -198,49 +198,9 @@ docker compose down
 ✔ Swagger funcional no ambiente Docker
 ✔ Código organizado, legível e extensível
 
----
 
-Perfeito 👍
-Abaixo está um **documento completo, profissional e pronto para entrega ao avaliador**, cobrindo **todos os principais endpoints do projeto**, explicando **objetivo, payloads, respostas, regras e arquitetura**.
-Esse texto você pode **colar direto no `README.md`** do repositório.
 
----
 
-# 📘 Ambev Developer Evaluation – API Documentation
-
-## 📌 Visão Geral
-
-Esta API foi desenvolvida como parte do **Developer Evaluation Project**, seguindo princípios de:
-
-* ✅ **Clean Architecture**
-* ✅ **DDD (Domain-Driven Design)**
-* ✅ **CQRS**
-* ✅ **Separação de responsabilidades**
-* ✅ **Auditoria desacoplada via MongoDB**
-
-A solução utiliza:
-
-* **PostgreSQL** para dados transacionais
-* **MongoDB** para auditoria/eventos
-* **ASP.NET Core 8**
-* **Entity Framework Core**
-* **FluentValidation**
-* **AutoMapper**
-
----
-
-## 🌐 Base URL
-
-```
-http://localhost:8080
-```
-
----
-
-## 🔐 Autenticação
-
-> Para simplificação do desafio, os endpoints estão públicos.
-> A infraestrutura de JWT já está configurada para fácil extensão.
 
 ---
 
