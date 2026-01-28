@@ -85,7 +85,7 @@ Essa abordagem foi escolhida para:
 * Documentação automática da API
 * Facilita validação dos endpoints pelo avaliador
 
-### ✅ JWT Authentication
+### ✅ JWT Authentication (não foi implementado, mas está demonstrado)
 
 * Endpoints protegidos
 * Endpoint de autenticação disponível para geração de token
@@ -189,22 +189,6 @@ docker run --rm -v "$PWD":/src -w /src mcr.microsoft.com/dotnet/sdk:8.0 dotnet t
 docker compose down
 ```
 
----
-
-## 🔐 Autenticação
-
-A API utiliza **JWT Authentication**.
-
-1. Utilize o endpoint de autenticação:
-
-   ```
-   POST /api/Auth
-   ```
-2. Copie o token retornado
-3. Use o botão **Authorize** no Swagger para autenticar as requisições protegidas
-
----
-
 ## 📊 Diferenciais da Implementação
 
 ✔ Arquitetura limpa e escalável
@@ -220,6 +204,7 @@ A API utiliza **JWT Authentication**.
 ## 📌 Considerações Finais
 
 Este projeto foi desenvolvido com foco em **qualidade, clareza e aderência a padrões de mercado**, simulando um cenário real de aplicação corporativa.
+Foi utilizado um template da ambve
 
 A abordagem adotada facilita:
 
